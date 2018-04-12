@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imagePerson"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ratingBarReview"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <TextView
+        android:id="@+id/txtPersonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_toEndOf="@+id/imagePerson"
+        android:layout_toRightOf="@+id/imagePerson"
+        android:text="TextView"
+        android:autoLink="web"
+        android:linksClickable="true" />
+
+    <RatingBar
+        android:id="@+id/ratingBarReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtPersonName"
+        android:layout_alignStart="@+id/txtPersonName"
+        android:layout_below="@+id/txtPersonName"
+        android:isIndicator="true"
+        style="?android:attr/ratingBarStyleSmall" />
+
+    <TextView
+        android:id="@+id/txtDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ratingBarReview"
+        android:layout_alignStart="@+id/ratingBarReview"
+        android:layout_below="@+id/ratingBarReview"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/txtReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtDate"
+        android:layout_alignStart="@+id/txtDate"
+        android:layout_below="@+id/txtDate"
+        android:text="TextView" />
+</RelativeLayout>

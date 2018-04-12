@@ -1,0 +1,156 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/txtKeywordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:errorTextAppearance="@style/error_appearance" >
+    <TextView
+        android:id="@+id/lblKeyword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Keyword"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="156dp"
+        tools:layout_editor_absoluteY="51dp" />
+    </android.support.design.widget.TextInputLayout>
+
+    <EditText
+        android:id="@+id/txtKeyword"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:ems="10"
+        android:hint="Enter Keyword"
+        android:inputType="text"
+        android:singleLine="true"
+        app:layout_constraintLeft_toLeftOf="@+id/txtKeywordLayout"
+        app:layout_constraintStart_toStartOf="@+id/txtKeywordLayout"
+        app:layout_constraintTop_toBottomOf="@+id/txtKeywordLayout"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="93dp" />
+
+    <TextView
+        android:id="@+id/lblCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:text="Category"
+        app:layout_constraintLeft_toLeftOf="@+id/txtKeyword"
+        app:layout_constraintStart_toStartOf="@+id/txtKeyword"
+        app:layout_constraintTop_toBottomOf="@+id/txtKeyword" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/txtKeyword"
+        app:layout_constraintLeft_toLeftOf="@+id/lblCategory"
+        app:layout_constraintRight_toRightOf="@+id/txtKeyword"
+        app:layout_constraintStart_toStartOf="@+id/lblCategory"
+        app:layout_constraintTop_toBottomOf="@+id/lblCategory" />
+
+    <TextView
+        android:id="@+id/lblDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:text="Distance (in miles)"
+        app:layout_constraintLeft_toLeftOf="@+id/spinner"
+        app:layout_constraintStart_toStartOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+    <EditText
+        android:id="@+id/txtDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter distance (default 10 miles)"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/spinner"
+        app:layout_constraintLeft_toLeftOf="@+id/lblDistance"
+        app:layout_constraintRight_toRightOf="@+id/spinner"
+        app:layout_constraintStart_toStartOf="@+id/lblDistance"
+        app:layout_constraintTop_toBottomOf="@+id/lblDistance" />
+
+    <TextView
+        android:id="@+id/txtFrom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From"
+        app:layout_constraintLeft_toLeftOf="@+id/txtDistance"
+        app:layout_constraintStart_toStartOf="@+id/txtDistance"
+        app:layout_constraintTop_toBottomOf="@+id/txtDistance" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rdGroup"
+        app:layout_constraintLeft_toLeftOf="@+id/txtFrom"
+        app:layout_constraintStart_toStartOf="@+id/txtFrom"
+        app:layout_constraintTop_toBottomOf="@+id/txtFrom">
+    <RadioButton
+        android:id="@+id/rdCurrentLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current location"
+        app:layout_constraintLeft_toLeftOf="@+id/txtFrom"
+        app:layout_constraintStart_toStartOf="@+id/txtFrom"
+        app:layout_constraintTop_toBottomOf="@+id/txtFrom" />
+
+    <RadioButton
+        android:id="@+id/rdOtherLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Other. Specify location"
+        app:layout_constraintLeft_toLeftOf="@+id/rdCurrentLoc"
+        app:layout_constraintStart_toStartOf="@+id/rdCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/rdCurrentLoc" />
+    </RadioGroup>
+
+    <AutoCompleteTextView
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        android:id="@+id/txtLocation"
+        android:layout_width="352dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Type in the Location"
+        android:inputType="textPostalAddress"
+        app:layout_constraintEnd_toEndOf="@+id/txtDistance"
+        app:layout_constraintRight_toRightOf="@+id/txtDistance"
+        app:layout_constraintTop_toBottomOf="@+id/rdGroup" />
+
+    <Button
+        android:id="@+id/btnSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Search"
+        app:layout_constraintEnd_toStartOf="@+id/btnClear"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
+
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Clear"
+        android:onClick="clearForm"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSearch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnSearch" />
+</android.support.constraint.ConstraintLayout>
