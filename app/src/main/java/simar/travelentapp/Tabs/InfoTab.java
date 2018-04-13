@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import simar.travelentapp.R;
 
 public class InfoTab extends Fragment {
     private JSONObject _detailsObject;

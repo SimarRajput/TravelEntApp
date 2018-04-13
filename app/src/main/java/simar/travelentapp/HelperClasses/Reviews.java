@@ -1,5 +1,4 @@
-package simar.travelentapp;
-
+package simar.travelentapp.HelperClasses;
 import java.util.Date;
 
 /**
@@ -14,10 +13,12 @@ public class Reviews {
     private String revUrl;
     private float revRating;
 
+    //Default constructor
     public Reviews(){
         return;
     }
 
+    //Copy constructor
     public Reviews(String revProfilePic, String revName, Date revDate, String revReview,String revUrl, float revRating){
         this.revProfilePic = revProfilePic;
         this.revName = revName;

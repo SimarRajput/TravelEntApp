@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +13,9 @@ import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import simar.travelentapp.R;
+import simar.travelentapp.HelperClasses.Reviews;
 
 /**
  * Created by simar on 4/8/18.

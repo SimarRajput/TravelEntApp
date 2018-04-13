@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 /**
  * Created by simar on 4/6/18.
@@ -6,7 +6,6 @@ package simar.travelentapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +29,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import simar.travelentapp.Adapters.AdapterSearchResults;
+import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.HelperClasses.DatabaseHelper;
+import simar.travelentapp.Activities.Details;
+import simar.travelentapp.HelperClasses.Places;
+import simar.travelentapp.R;
 
 public class FavoritesTab extends Fragment {
     private AdapterSearchResults _adapterSearchResults;

@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -10,7 +10,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -25,9 +24,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -48,6 +45,11 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import simar.travelentapp.Adapters.AdapterAutocomplete;
+import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.R;
+import simar.travelentapp.Activities.SearchResults;
 
 public class SearchTab extends Fragment {
     private ProgressDialog _pDialog;

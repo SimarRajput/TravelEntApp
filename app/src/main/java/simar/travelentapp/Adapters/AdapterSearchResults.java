@@ -1,20 +1,22 @@
-package simar.travelentapp;
+package simar.travelentapp.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import simar.travelentapp.HelperClasses.DatabaseHelper;
+import simar.travelentapp.HelperClasses.Places;
+import simar.travelentapp.R;
 
 /**
  * Created by simar on 4/8/18.

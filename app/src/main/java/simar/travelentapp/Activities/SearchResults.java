@@ -1,10 +1,9 @@
-package simar.travelentapp;
+package simar.travelentapp.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +25,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import simar.travelentapp.Activities.Details;
+import simar.travelentapp.Adapters.AdapterSearchResults;
+import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.HelperClasses.DatabaseHelper;
+import simar.travelentapp.HelperClasses.Places;
+import simar.travelentapp.R;
 
 public class SearchResults extends AppCompatActivity {
     ArrayList<Places> _placesList = new ArrayList<>();

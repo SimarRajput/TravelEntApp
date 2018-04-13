@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.HelperClasses;
 
 /**
  * Created by simar on 4/8/18.
@@ -12,7 +12,6 @@ public class Places {
 
     // Default Constructor
     public Places() {
-
         return;
     }
 

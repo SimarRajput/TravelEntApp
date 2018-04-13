@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;

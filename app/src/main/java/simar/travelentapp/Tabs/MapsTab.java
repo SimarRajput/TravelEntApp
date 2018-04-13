@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -29,59 +29,65 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RuntimeRemoteException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.PolyUtil;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapsTab extends Fragment {
-    LatLng _placeLatLang;
-    View _rootView;
-    MapView _MapView;
-    private GoogleMap _googleMap;
-    Spinner _spinnerMapMode;
-    double _latOrigin = 0;
-    double _lonOrigin = 0;
-    protected GeoDataClient _geoDataClient;
-    private AdapterAutocomplete _autoCompAdapter;
-    boolean _locationPerGranted = false;
-    private static final int _autoCompleteReqCode = 1;
-    AutoCompleteTextView _txtFromLocation;
+import simar.travelentapp.Adapters.AdapterAutocomplete;
+import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.HelperClasses.DataParser;
+import simar.travelentapp.R;
 
+public class MapsTab extends Fragment {
+    //region Variables
+    private LatLng _placeLatLang;
+    private AdapterAutocomplete _autoCompAdapter;
+    private View _rootView;
+    private MapView _MapView;
+    private GoogleMap _googleMap;
+    private Spinner _spinnerMapMode;
+    private AutoCompleteTextView _txtFromLocation;
+    private DataParser _dataParser;
+
+    private double _latOrigin = 0;
+    private double _lonOrigin = 0;
+    private static final int _autoCompleteReqCode = 1;
+
+    protected GeoDataClient _geoDataClient;
+    //endregion
+
+    //region Override Methods
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Initialize global variables
         _rootView = inflater.inflate(R.layout.maps_tab, container, false);
-
+        _dataParser = new DataParser();
         _geoDataClient = com.google.android.gms.location.places.Places.getGeoDataClient(getActivity(), null);
 
+        //Get intent data
         Bundle bundleDetails = getArguments();
         String[] placeLatLangString = bundleDetails.getString("LatLng").split(",");
         double latitude = Double.parseDouble(placeLatLangString[0]);
         double longitude = Double.parseDouble(placeLatLangString[1]);
         _placeLatLang = new LatLng(latitude, longitude);
 
+        //Initialize maps
         _MapView = (MapView) _rootView.findViewById(R.id.mapView);
         _MapView.onCreate(savedInstanceState);
         _MapView.onResume();
-
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         _MapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
@@ -102,18 +108,18 @@ public class MapsTab extends Fragment {
         _spinnerMapMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if(_latOrigin != 0 && _lonOrigin != 0) {
+                if (_latOrigin != 0 && _lonOrigin != 0) {
                     getDirections(_spinnerMapMode.getItemAtPosition(position).toString());
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                //Do nothing
             }
         });
 
-
+        // Initialize form
         _txtFromLocation = (AutoCompleteTextView) _rootView.findViewById(R.id.txtFromLocation);
         _autoCompAdapter = new AdapterAutocomplete(getActivity(), _geoDataClient, null, null);
         _txtFromLocation.setAdapter(_autoCompAdapter);
@@ -145,7 +151,9 @@ public class MapsTab extends Fragment {
         super.onLowMemory();
         _MapView.onLowMemory();
     }
+    //endregion
 
+    //region Listners
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -158,8 +166,7 @@ public class MapsTab extends Fragment {
         }
     };
 
-    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback
-            = new OnCompleteListener<PlaceBufferResponse>() {
+    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback = new OnCompleteListener<PlaceBufferResponse>() {
         @SuppressLint("RestrictedApi")
         @Override
         public void onComplete(Task<PlaceBufferResponse> task) {
@@ -182,7 +189,9 @@ public class MapsTab extends Fragment {
             }
         }
     };
+    //endregion
 
+    //region Private Methods
     private void getDirections(String mode) {
         String url = "";
         StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
@@ -199,7 +208,7 @@ public class MapsTab extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        String[] directionsList = parseJSONDirections(response);
+                        String[] directionsList = _dataParser.parseJSONDirections(response);
                         displayDirection(directionsList);
                     }
                 }, new Response.ErrorListener() {
@@ -219,47 +228,13 @@ public class MapsTab extends Fragment {
         AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
     }
 
-    private String[] parseJSONDirections(JSONObject directions) {
-        JSONArray jsonArray = null;
-        try {
-            jsonArray = directions.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return getPaths(jsonArray);
-    }
-
-    public String[] getPaths(JSONArray googleStepsJson) {
-        int stepsCount = googleStepsJson.length();
-        String[] polylines = new String[stepsCount];
-
-        for (int i = 0; i < stepsCount; i++) {
-            try {
-                polylines[i] = getPath(googleStepsJson.getJSONObject(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return polylines;
-    }
-
-    public String getPath(JSONObject googlePathJson) {
-        String polyline = "";
-        try {
-            polyline = googlePathJson.getJSONObject("polyline").getString("points");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return polyline;
-    }
-
-    public void displayDirection(String[] directionsList) {
+    private void displayDirection(String[] directionsList) {
         _googleMap.clear();
         _googleMap.addMarker(new MarkerOptions().position(new LatLng(_placeLatLang.latitude, _placeLatLang.longitude)));
 
         PolylineOptions options = new PolylineOptions();
         options.color(Color.BLUE);
-        options.width(15);
+        options.width(12);
 
         for (int i = 0; i < directionsList.length; i++) {
             options.addAll(PolyUtil.decode(directionsList[i]));
@@ -270,6 +245,7 @@ public class MapsTab extends Fragment {
         CameraPosition cameraPosition = new CameraPosition.Builder().target(_placeLatLang).zoom(12).build();
         _googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+    //endregion
 }
 
 

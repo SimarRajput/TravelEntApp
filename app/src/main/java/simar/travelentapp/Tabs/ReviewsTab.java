@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -26,44 +26,55 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import simar.travelentapp.Adapters.AdapterReviews;
+import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.HelperClasses.DataParser;
+import simar.travelentapp.Listners.RecyclerTouchListener;
+import simar.travelentapp.R;
+import simar.travelentapp.HelperClasses.Reviews;
+
 public class ReviewsTab extends Fragment {
-    ArrayList<Reviews> _reviewList = new ArrayList<>();
-    ArrayList<Reviews> _reviewListYelp = new ArrayList<>();
-    ArrayList<Reviews> _reviewListDefaultSort = new ArrayList<>();
-    ArrayList<Reviews> _reviewListYelpDefaultSort = new ArrayList<>();
+    //region Variables
     private AdapterReviews _adapterReviews;
     private AdapterReviews _adapterReviewsYelp;
-    View _rootView;
-    JSONObject _details = null;
-    Spinner _spinnerReviewType;
-    Spinner _spinnerReviewSort;
-    ProgressDialog _pDialog;
-    RecyclerView _recReviews;
-    int _reviewPosition = 0;
-    int _reviewSortPosition = 0;
-    TextView _emptyView;
+    private DataParser _dataParser;
 
+    private View _rootView;
+    private JSONObject _details = null;
+    private Spinner _spinnerReviewType;
+    private Spinner _spinnerReviewSort;
+    private ProgressDialog _pDialog;
+    private RecyclerView _recReviews;
+    private TextView _emptyView;
+
+    private int _reviewPosition = 0;
+    private int _reviewSortPosition = 0;
+    private ArrayList<Reviews> _reviewList = new ArrayList<>();
+    private ArrayList<Reviews> _reviewListYelp = new ArrayList<>();
+    private ArrayList<Reviews> _reviewListDefaultSort = new ArrayList<>();
+    private ArrayList<Reviews> _reviewListYelpDefaultSort = new ArrayList<>();
+    //endregion
+
+    //region Override Methods
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         _rootView = inflater.inflate(R.layout.reviews_tab, container, false);
 
-        _emptyView = (TextView) _rootView.findViewById(R.id.emptyView);
+        //Initialize data parser
+        _dataParser = new DataParser();
+
         //Initialize Recycler View
         _recReviews = (RecyclerView) _rootView.findViewById(R.id.recReviews);
         _recReviews.setLayoutManager(new LinearLayoutManager(getActivity()));
         _adapterReviews = new AdapterReviews(getActivity());
         _recReviews.setAdapter(_adapterReviews);
-
         _recReviews.addOnItemTouchListener(new RecyclerTouchListener(getContext(), _recReviews, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -89,14 +100,17 @@ public class ReviewsTab extends Fragment {
         _pDialog.setMessage("Fetching Data");
         _pDialog.setCancelable(false);
 
+        //Get intent data
         Bundle bundleDetails = getArguments();
         String detailsString = bundleDetails.getString("Reviews");
-
         try {
             _details = new JSONObject(detailsString);
             if(_details.has("reviews")){
                 JSONArray reviews = _details.getJSONArray("reviews");
-                parseJsonData(reviews);
+
+                _reviewList = _dataParser.parseJSONReviews(reviews);
+                _reviewListDefaultSort = _dataParser.parseJSONReviews(reviews);;
+
                 _adapterReviews.setReviewsList(_reviewList);
             }
             else{
@@ -146,36 +160,14 @@ public class ReviewsTab extends Fragment {
             }
         });
 
+        //Form variables initialization
+        _emptyView = (TextView) _rootView.findViewById(R.id.emptyView);
+
         return _rootView;
     }
+    //endregion
 
-    private void parseJsonData(JSONArray reviews) throws JSONException {
-        for (int i = 0; i < reviews.length(); i++) {
-            JSONObject jsonPlace = reviews.getJSONObject(i);
-
-            String revUrl = jsonPlace.getString("author_url");
-            String revProfilePic = jsonPlace.getString("profile_photo_url");
-            String revName = jsonPlace.getString("author_name");
-            String revReview = jsonPlace.getString("text");
-            float revRating = Float.parseFloat(jsonPlace.getString("rating"));
-
-            long unixSeconds = Long.parseLong(jsonPlace.getString("time"));
-            Date date = new java.util.Date(unixSeconds * 1000L);
-            SimpleDateFormat simpleDate = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            simpleDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT-8"));
-            Date revDate = null;
-            try {
-                revDate = simpleDate.parse(simpleDate.format(date));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            Reviews review = new Reviews(revProfilePic, revName, revDate, revReview, revUrl, revRating);
-            _reviewList.add(review);
-            _reviewListDefaultSort.add(review);
-        }
-    }
-
+    //region Private Methods
     private void toggleReviewsType(AdapterView<?> parent, View view, int position, long id) {
         if(position == 0){
             _reviewPosition = 0;
@@ -331,11 +323,11 @@ public class ReviewsTab extends Fragment {
     }
 
     private void searchYelpReviews(String id){
+        String tag_json_obj = "json_obj_req";
+
         String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";
         url += "/yelpreviews?";
         url += "id=" + id;
-
-        String tag_json_obj = "json_obj_req";
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
@@ -344,7 +336,8 @@ public class ReviewsTab extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONArray yelpReviews = response.getJSONArray("reviews");
-                            parseYelpReviews(yelpReviews);
+                            _reviewListYelp = _dataParser.parseJSONReviewsYelp(yelpReviews);
+                            _reviewListYelpDefaultSort = _dataParser.parseJSONReviewsYelp(yelpReviews);
                             _adapterReviewsYelp = new AdapterReviews(getActivity());
                             sortReviews(_reviewSortPosition);
                             hidepDialog();
@@ -416,7 +409,6 @@ public class ReviewsTab extends Fragment {
             url += "postalCode=" + postalCode;
 
         } catch (JSONException e) {
-            e.printStackTrace();
             Toast.makeText(getActivity(), R.string.common_error, Toast.LENGTH_SHORT).show();
         }
         return url;
@@ -431,27 +423,5 @@ public class ReviewsTab extends Fragment {
         if (_pDialog.isShowing())
             _pDialog.dismiss();
     }
-
-    private void parseYelpReviews(JSONArray yelpReviews) throws JSONException {
-        for (int i = 0; i < yelpReviews.length(); i++) {
-            JSONObject jsonPlace = yelpReviews.getJSONObject(i);
-
-            String revUrl = jsonPlace.getString("url");
-            String revProfilePic = jsonPlace.getJSONObject("user").getString("image_url");
-            String revName = jsonPlace.getJSONObject("user").getString("name");
-            String revReview = jsonPlace.getString("text");
-            float revRating = Float.parseFloat(jsonPlace.getString("rating"));
-
-            Date revDate = null;
-            try {
-                revDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jsonPlace.getString("time_created"));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            Reviews review = new Reviews(revProfilePic, revName, revDate, revReview, revUrl, revRating);
-            _reviewListYelp.add(review);
-            _reviewListYelpDefaultSort.add(review);
-        }
-    }
+    //endregion
 }

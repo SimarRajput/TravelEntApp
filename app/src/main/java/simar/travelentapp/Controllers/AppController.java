@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Controllers;
 
 import android.app.Application;
 import android.text.TextUtils;

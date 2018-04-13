@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Tabs;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -21,6 +21,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+
+import simar.travelentapp.Adapters.AdapterPhotos;
+import simar.travelentapp.R;
 
 public class PhotosTab extends Fragment {
 

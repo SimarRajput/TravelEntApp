@@ -1,10 +1,8 @@
-package simar.travelentapp;
+package simar.travelentapp.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +21,13 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import simar.travelentapp.HelperClasses.DatabaseHelper;
+import simar.travelentapp.R;
+import simar.travelentapp.Tabs.InfoTab;
+import simar.travelentapp.Tabs.MapsTab;
+import simar.travelentapp.Tabs.PhotosTab;
+import simar.travelentapp.Tabs.ReviewsTab;
 
 public class Details extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;

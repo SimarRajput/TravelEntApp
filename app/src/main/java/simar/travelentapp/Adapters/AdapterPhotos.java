@@ -1,4 +1,4 @@
-package simar.travelentapp;
+package simar.travelentapp.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import com.google.android.gms.location.places.GeoDataClient;
 
 import java.util.ArrayList;
+
+import simar.travelentapp.R;
 
 /**
  * Created by simar on 4/8/18.
