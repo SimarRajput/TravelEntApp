@@ -117,6 +117,16 @@ public class FavoritesTab extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == getActivity().RESULT_OK) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(FavoritesTab.this).attach(FavoritesTab.this).commit();
+        }
+    }
+
     private void showPlacesInRecycler(){
         _placesList = _databaseHelper.getFavoriteData();
 
@@ -141,7 +151,7 @@ public class FavoritesTab extends Fragment {
                     public void onResponse(JSONObject response) {
                         Intent resultsIntent = new Intent(getActivity(), Details.class);
                         resultsIntent.putExtra("SearchResults", response.toString());
-                        startActivity(resultsIntent);
+                        startActivityForResult(resultsIntent, 1);
                         hidepDialog();
                     }
                 }, new Response.ErrorListener() {
@@ -161,6 +171,7 @@ public class FavoritesTab extends Fragment {
         };
         AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
     }
+
 
     private String GetUrl(String placeID) {
         String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";

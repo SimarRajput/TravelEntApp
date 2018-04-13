@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -67,6 +68,8 @@ public class SearchTab extends Fragment {
     AutoCompleteTextView _txtLocation;
     Button _btnSearch;
     Button _btnClear;
+    TextInputLayout _txtKeywordLayout;
+    TextInputLayout _txtLocationLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,7 +104,6 @@ public class SearchTab extends Fragment {
                     public void onClick(View v) {
                         if (validateInput()) {
                             showpDialog();
-                            clearErrors();
                             searchData();
                         }
                     }
@@ -169,25 +171,39 @@ public class SearchTab extends Fragment {
         boolean validated = true;
 
         if (_txtKeyword.getText().toString().matches("")) {
-            showErrors(_txtKeyword.getId());
+            showErrors(_txtKeywordLayout.getId());
             validated = false;
+        }else{
+            clearErrors(_txtKeywordLayout.getId());
         }
 
         if (_rdCurrentLoc.isChecked() == false) {
             if (_txtLocation.getText().toString().matches("")) {
-                showErrors(_txtKeyword.getId());
+                showErrors(_txtLocationLayout.getId());
                 validated = false;
+            }
+            else{
+                clearErrors(_txtLocationLayout.getId());
             }
         }
         return validated;
     }
 
     private void showErrors(int id) {
-        TextView txtError = (TextView) _rootView.findViewById(id);
+        TextInputLayout txtError = (TextInputLayout) _rootView.findViewById(id);
         txtError.requestFocus();
+        txtError.setErrorEnabled(true);
         txtError.setError(getText(R.string.req_error));
         Toast.makeText(getActivity(), R.string.req_error_toast, Toast.LENGTH_SHORT).show();
     }
+
+    private void clearErrors(int id) {
+        TextInputLayout txtError = (TextInputLayout) _rootView.findViewById(id);
+        txtError.requestFocus();
+        txtError.setErrorEnabled(false);
+        txtError.setError(null);
+    }
+
 
     private void getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
@@ -247,6 +263,9 @@ public class SearchTab extends Fragment {
         _rdCurrentLoc = (RadioButton) _rootView.findViewById(R.id.rdCurrentLoc);
         _txtKeyword = (EditText) _rootView.findViewById(R.id.txtKeyword);
         _txtDistance = (EditText) _rootView.findViewById(R.id.txtDistance);
+        _txtKeywordLayout = (TextInputLayout) _rootView.findViewById(R.id.txtKeywordLayout);
+        _txtLocationLayout = (TextInputLayout) _rootView.findViewById(R.id.txtLocationLayout);
+
         _geoDataClient = Places.getGeoDataClient(getActivity(), null);
         _txtLocation.setEnabled(false);
         _rdCurrentLoc.setChecked(true);
@@ -273,11 +292,6 @@ public class SearchTab extends Fragment {
         _spinner.setSelection(0);
         _txtDistance.setText("");
         _rdCurrentLoc.setChecked(true);
-    }
-
-    private void clearErrors() {
-        TextView lblKeyword = (TextView) _rootView.findViewById(R.id.lblKeyword);
-        lblKeyword.setError(null);
     }
 
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
@@ -308,6 +322,7 @@ public class SearchTab extends Fragment {
                 _lon = latLng.longitude;
 
                 places.release();
+                validateInput();
             } catch (RuntimeRemoteException e) {
                 return;
             }

@@ -237,6 +237,7 @@ public class Details extends AppCompatActivity {
                 Toast.makeText(view.getContext(), R.string.common_error, Toast.LENGTH_SHORT).show();
             }
         }
+        setResult(RESULT_OK, null);
     }
 
     private void checkifInFavorite(String placeID){

@@ -134,9 +134,12 @@ public class SearchResults extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
+
+        if(resultCode == RESULT_OK) {
+            Intent intent = getIntent();
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void parseJsonData(JSONObject searchResults) throws JSONException {
@@ -172,7 +175,7 @@ public class SearchResults extends AppCompatActivity {
                         Intent resultsIntent = new Intent(getBaseContext(), Details.class);
                         resultsIntent.putExtra("SearchResults", response.toString());
                         resultsIntent.putExtra("Position", position);
-                        startActivity(resultsIntent);
+                        startActivityForResult(resultsIntent, 1);
                         hidepDialog();
                     }
                 }, new Response.ErrorListener() {
