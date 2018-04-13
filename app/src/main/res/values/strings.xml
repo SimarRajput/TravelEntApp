@@ -86,4 +86,5 @@
     <string name="tab_text_photo">PHOTOS</string>
     <string name="tab_text_maps">MAP</string>
     <string name="tab_text_reviews">REVIEWS</string>
+    <string name="txtNoResults">No results</string>
 </resources>

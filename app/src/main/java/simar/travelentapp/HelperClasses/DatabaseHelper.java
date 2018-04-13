@@ -128,7 +128,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 placeIdList.add(data.getString(0));
             }
         }
-
         return placeIdList;
     }
 }

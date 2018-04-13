@@ -54,9 +54,11 @@ public class AdapterSearchResults extends RecyclerView.Adapter<AdapterSearchResu
     public void setPlacesList(ArrayList<Places> placeList) {
         //Fill favorites array list
         _favoritePlaceIdList = _databaseHelper.getFavoritePlaceIdList();
+        int previousContentSize = _placesList.size();
 
         this._placesList = placeList;
-        notifyItemRangeChanged(0, placeList.size());
+        notifyItemRangeRemoved(0, previousContentSize);
+        notifyItemRangeInserted(0, _placesList.size());
     }
 
     @Override

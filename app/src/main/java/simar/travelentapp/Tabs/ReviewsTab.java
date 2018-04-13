@@ -371,7 +371,7 @@ public class ReviewsTab extends Fragment {
         String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";
         try {
             url += "/yelpmatch?";
-            url += "name=" + _details.getString("name") + "&";
+            url += "name=" + _details.getString("name").substring(0, 63) + "&";
 
             double latitude = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
             double longitude = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lng");

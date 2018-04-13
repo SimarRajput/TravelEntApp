@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import simar.travelentapp.R;
+
 /**
  * Created by simar on 4/13/18.
  */
@@ -91,6 +93,32 @@ public class DataParser {
             }
         }
         return reviewsList;
+    }
+
+    public ArrayList<Places> parseJSONPlaces(JSONObject searchResults) {
+        ArrayList<Places> placesList = new ArrayList<>();
+        JSONArray jsonPlaces = null;
+
+        try {
+            jsonPlaces = searchResults.getJSONArray("results");
+
+
+            for (int i = 0; i < jsonPlaces.length(); i++) {
+                JSONObject jsonPlace = jsonPlaces.getJSONObject(i);
+
+                String placeID = jsonPlace.getString("place_id");
+                String placeName = jsonPlace.getString("name");
+                String placeLocation = jsonPlace.getString("vicinity");
+                String placeIcon = jsonPlace.getString("icon");
+
+                Places place = new Places(placeID, placeName, placeLocation, placeIcon);
+                placesList.add(place);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return placesList;
     }
 
     //endregion

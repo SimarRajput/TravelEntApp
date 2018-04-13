@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -22,27 +23,36 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import simar.travelentapp.Activities.Details;
 import simar.travelentapp.Adapters.AdapterSearchResults;
 import simar.travelentapp.Controllers.AppController;
+import simar.travelentapp.HelperClasses.DataParser;
 import simar.travelentapp.HelperClasses.DatabaseHelper;
 import simar.travelentapp.HelperClasses.Places;
 import simar.travelentapp.R;
 
 public class SearchResults extends AppCompatActivity {
-    ArrayList<Places> _placesList = new ArrayList<>();
+    //region Variables
+    private ArrayList<Places> _placesList = new ArrayList<>();
     private AdapterSearchResults _adapterSearchResults;
-    ProgressDialog _pDialog;
-    int _currentTableNumber = 1;
     private DatabaseHelper _databaseHelper;
-    String _nextPagetoken = "";
-    Button _btnNext = null;
-    Button _btnPrevious = null;
+    private DataParser _dataParser;
+    private ProgressDialog _pDialog;
 
+    private int _currentTableNumber = 1;
+    private String _nextPageToken = "";
+
+    private Button _btnNext = null;
+    private Button _btnPrevious = null;
+    private TextView _emptyView;
+    private RecyclerView _recResults;
+    //endregion
+
+    //region Override Methods
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,22 +61,25 @@ public class SearchResults extends AppCompatActivity {
         //Intialize views
         _btnNext = (Button) findViewById(R.id.btnNext);
         _btnPrevious = (Button) findViewById(R.id.btnPrevious);
+        _emptyView = (TextView) findViewById(R.id.emptyView);
 
-        //Initialize Database
+        //Initialize Database and data parser
         _databaseHelper = new DatabaseHelper(getApplicationContext());
         _databaseHelper.deleteSearchResultsData();
+        _dataParser = new DataParser();
 
         //Initialize process dialog
         _pDialog = new ProgressDialog(this);
         _pDialog.setMessage("Fetching Data");
         _pDialog.setCancelable(false);
 
-        //Initialize Recycler View
-        RecyclerView recResults = (RecyclerView) findViewById(R.id.recResults);
-        recResults.setLayoutManager(new LinearLayoutManager(this));
+        //Initialize Recycler View and adapter for recycler view
+        _recResults= (RecyclerView) findViewById(R.id.recResults);
+        _recResults.setLayoutManager(new LinearLayoutManager(this));
         _adapterSearchResults = new AdapterSearchResults(this);
-        recResults.setAdapter(_adapterSearchResults);
+        _recResults.setAdapter(_adapterSearchResults);
 
+        // Events bubbled from Adapter
         _adapterSearchResults.setOnItemClickListener(new AdapterSearchResults.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -115,16 +128,27 @@ public class SearchResults extends AppCompatActivity {
             searchResults = new JSONObject(getIntent().getStringExtra("SearchResults"));
 
             if(searchResults.has("next_page_token")){
-                _nextPagetoken = searchResults.getString("next_page_token");
+                _nextPageToken = searchResults.getString("next_page_token");
                 _btnNext.setEnabled(true);
             }else{
                 _btnNext.setEnabled(false);
             }
 
-            parseJsonData(searchResults);
-            _adapterSearchResults.setPlacesList(_placesList);
+            _placesList = _dataParser.parseJSONPlaces(searchResults);
+            if(_placesList.size() > 0) {
+                addPlacesToDatabase(_placesList);
+                _adapterSearchResults.setPlacesList(_placesList);
+                _recResults.setVisibility(View.VISIBLE);
+                _emptyView.setVisibility(View.GONE);
+            }else{
+                _recResults.setVisibility(View.GONE);
+                _emptyView.setVisibility(View.VISIBLE);
+            }
+
         } catch (JSONException e) {
-            Toast.makeText(this, R.string.common_error, Toast.LENGTH_SHORT).show();
+            _recResults.setVisibility(View.GONE);
+            _emptyView.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Unable to get search results. Please try again.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -147,28 +171,9 @@ public class SearchResults extends AppCompatActivity {
             finish();
         }
     }
+    //endregion
 
-    private void parseJsonData(JSONObject searchResults) throws JSONException {
-        JSONArray jsonPlaces = searchResults.getJSONArray("results");
-
-        for(int i = 0; i < jsonPlaces.length(); i++){
-            JSONObject jsonPlace = jsonPlaces.getJSONObject(i);
-
-            String placeID = jsonPlace.getString("place_id");
-            String placeName = jsonPlace.getString("name");
-            String placeLocation = jsonPlace.getString("vicinity");
-            String placeIcon = jsonPlace.getString("icon");
-
-            Places place = new Places(placeID, placeName, placeLocation, placeIcon);
-            _placesList.add(place);
-
-            _databaseHelper.addData(place.getPlaceID(), place.getPlaceName(),
-                    place.getPlaceLocation(), place.getPlaceIcon(),
-                    getString(R.string.tableSearchResults));
-
-        }
-    }
-
+    //region Private Methods
     private void openDetails(Places place, final int position){
         String url = GetUrl(place.getPlaceID());
         String tag_json_obj = "json_obj_req";
@@ -221,6 +226,16 @@ public class SearchResults extends AppCompatActivity {
         return url;
     }
 
+    private void addPlacesToDatabase(ArrayList<Places> placesList){
+        for(Places place: placesList) {
+            _databaseHelper.addData(place.getPlaceID(), place.getPlaceName(),
+                    place.getPlaceLocation(), place.getPlaceIcon(),
+                    getString(R.string.tableSearchResults));
+        }
+    }
+    //endregion
+
+    //region Public Methods
     public void getPreviousResults(View view) {
         int start = 0;
         int end = 0;
@@ -250,9 +265,7 @@ public class SearchResults extends AppCompatActivity {
                 Places place = new Places(placeID, placeName, placeLocation, placeIcon);
                 _placesList.add(place);
             }
-
             _adapterSearchResults.setPlacesList(_placesList);
-
 
             if (_currentTableNumber == 1) {
                 _btnPrevious.setEnabled(false);
@@ -293,7 +306,7 @@ public class SearchResults extends AppCompatActivity {
         } else {
             String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";
             url += "/nextpage?";
-            url += "nextPageToken=" + _nextPagetoken;
+            url += "nextPageToken=" + _nextPageToken;
 
             String tag_json_obj = "json_obj_req";
 
@@ -305,21 +318,32 @@ public class SearchResults extends AppCompatActivity {
                             if (response != null) {
                                 try {
                                     _placesList = new ArrayList<>();
-                                    parseJsonData(response);
-                                    _adapterSearchResults.setPlacesList(_placesList);
-                                    if (response.has("next_page_token")) {
-                                        _nextPagetoken = response.getString("next_page_token");
-                                        _btnNext.setEnabled(true);
-                                    } else {
-                                        _btnNext.setEnabled(false);
+                                    _placesList = _dataParser.parseJSONPlaces(response);
+                                    if(_placesList.size() > 0) {
+                                        addPlacesToDatabase(_placesList);
+                                        _adapterSearchResults.setPlacesList(_placesList);
+                                        if (response.has("next_page_token")) {
+                                            _nextPageToken = response.getString("next_page_token");
+                                            _btnNext.setEnabled(true);
+                                        } else {
+                                            _btnNext.setEnabled(false);
+                                        }
+                                        _btnPrevious.setEnabled(true);
+                                        _currentTableNumber += 1;
+                                        _recResults.setVisibility(View.VISIBLE);
+                                        _emptyView.setVisibility(View.GONE);
+                                    }else{
+                                        _recResults.setVisibility(View.GONE);
+                                        _emptyView.setVisibility(View.VISIBLE);
                                     }
-                                    _btnPrevious.setEnabled(true);
-                                    _currentTableNumber += 1;
-                                    hidepDialog();
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    _recResults.setVisibility(View.GONE);
+                                    _emptyView.setVisibility(View.VISIBLE);
                                 }
                             }
+                            hidepDialog();
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -327,6 +351,8 @@ public class SearchResults extends AppCompatActivity {
                     String errorMessage = error.getMessage();
                     Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
                     hidepDialog();
+                    _recResults.setVisibility(View.GONE);
+                    _emptyView.setVisibility(View.VISIBLE);
                 }
             }) {
                 @Override
@@ -339,4 +365,5 @@ public class SearchResults extends AppCompatActivity {
             AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
         }
     }
+    //endregion
 }
