@@ -35,9 +35,9 @@ import java.util.Map;
 import simar.travelentapp.Adapters.AdapterReviews;
 import simar.travelentapp.Controllers.AppController;
 import simar.travelentapp.HelperClasses.DataParser;
+import simar.travelentapp.HelperClasses.Reviews;
 import simar.travelentapp.Listners.RecyclerTouchListener;
 import simar.travelentapp.R;
-import simar.travelentapp.HelperClasses.Reviews;
 
 public class ReviewsTab extends Fragment {
     //region Variables
@@ -57,8 +57,8 @@ public class ReviewsTab extends Fragment {
     private int _reviewSortPosition = 0;
     private ArrayList<Reviews> _reviewList = new ArrayList<>();
     private ArrayList<Reviews> _reviewListYelp = new ArrayList<>();
-    private ArrayList<String> _reviewListDefaultSort = new ArrayList<>();
-    private ArrayList<String> _reviewListYelpDefaultSort = new ArrayList<>();
+    private Reviews[] _reviewListDefaultSort;
+    private Reviews[] _reviewListYelpDefaultSort;
     //endregion
 
     //region Override Methods
@@ -105,15 +105,13 @@ public class ReviewsTab extends Fragment {
         String detailsString = bundleDetails.getString("Reviews");
         try {
             _details = new JSONObject(detailsString);
-            if(_details.has("reviews")){
+            if (_details.has("reviews")) {
                 JSONArray reviews = _details.getJSONArray("reviews");
-
                 _reviewList = _dataParser.parseJSONReviews(reviews);
-                _reviewListDefaultSort = cloneObject(_reviewList);
-
+                Reviews[] reviewsArray = new Reviews[_reviewList.size()];
+                _reviewListDefaultSort = _reviewList.toArray(reviewsArray);
                 _adapterReviews.setReviewsList(_reviewList);
-            }
-            else{
+            } else {
                 _recReviews.setVisibility(View.GONE);
                 _emptyView.setVisibility(View.VISIBLE);
             }
@@ -130,7 +128,7 @@ public class ReviewsTab extends Fragment {
                 this.getActivity(), R.array.review_type_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _spinnerReviewType.setAdapter(adapter);
-        _spinnerReviewType.setSelection(0,false);
+        _spinnerReviewType.setSelection(0, false);
         _spinnerReviewType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -149,7 +147,7 @@ public class ReviewsTab extends Fragment {
                 this.getActivity(), R.array.review_sort_array, android.R.layout.simple_spinner_item);
         adapterSort.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _spinnerReviewSort.setAdapter(adapterSort);
-        _spinnerReviewSort.setSelection(0,false);
+        _spinnerReviewSort.setSelection(0, false);
         _spinnerReviewSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -171,29 +169,21 @@ public class ReviewsTab extends Fragment {
 
     //region Private Methods
     private void toggleReviewsType(AdapterView<?> parent, View view, int position, long id) {
-        if(position == 0){
+        if (position == 0) {
             _reviewPosition = 0;
             showGoogleReviews();
             sortReviews(_reviewSortPosition);
-        }else{
+        } else {
             _reviewPosition = 1;
             initiateBusinessMatch();
         }
     }
 
     private void sortReviews(int position) {
-        if(_reviewPosition == 0) {
+        if (_reviewPosition == 0) {
             if (position == 0) {
-                ArrayList<Reviews> defaultOrderReviews = new ArrayList<>();
-                for(int i = 0; i < _reviewListDefaultSort.size(); i++){
-                    for(int j = 0; j < _reviewList.size(); j++){
-                        if(_reviewListDefaultSort.get(i) == _reviewList.get(j).getRevUrl()){
-                            defaultOrderReviews.add(_reviewList.get(j));
-                            break;
-                        }
-                    }
-                }
-                _reviewList = defaultOrderReviews;
+                _reviewList = new ArrayList<Reviews>();
+                Collections.addAll(_reviewList, _reviewListDefaultSort);
                 _reviewSortPosition = 0;
             } else if (position == 1) {
                 Collections.sort(_reviewList, new Comparator<Reviews>() {
@@ -230,18 +220,10 @@ public class ReviewsTab extends Fragment {
             }
             _recReviews.setAdapter(_adapterReviews);
             _adapterReviews.setReviewsList(_reviewList);
-        } else{
+        } else {
             if (position == 0) {
-                ArrayList<Reviews> defaultOrderReviews = new ArrayList<>();
-                for(int i = 0; i < _reviewListYelpDefaultSort.size(); i++){
-                    for(int j = 0; j < _reviewListYelp.size(); j++){
-                        if(_reviewListYelpDefaultSort.get(i) == _reviewListYelp.get(j).getRevUrl()){
-                            defaultOrderReviews.add(_reviewListYelp.get(j));
-                            break;
-                        }
-                    }
-                }
-                _reviewListYelp = defaultOrderReviews;
+                _reviewListYelp = new ArrayList<Reviews>();
+                Collections.addAll(_reviewListYelp, _reviewListYelpDefaultSort);
                 _reviewSortPosition = 0;
             } else if (position == 1) {
                 Collections.sort(_reviewListYelp, new Comparator<Reviews>() {
@@ -281,13 +263,13 @@ public class ReviewsTab extends Fragment {
         }
     }
 
-    private void showGoogleReviews(){
+    private void showGoogleReviews() {
         _recReviews.setVisibility(View.VISIBLE);
         _emptyView.setVisibility(View.GONE);
     }
 
-    private void initiateBusinessMatch(){
-        if(_reviewListYelp.size() == 0) {
+    private void initiateBusinessMatch() {
+        if (_reviewListYelp.size() == 0) {
             showpDialog();
             String url = GetUrlBusinessMatch();
             String tag_json_obj = "json_obj_req";
@@ -335,14 +317,14 @@ public class ReviewsTab extends Fragment {
                 }
             };
             AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
-        }else{
+        } else {
             _recReviews.setVisibility(View.VISIBLE);
             _emptyView.setVisibility(View.GONE);
             sortReviews(_reviewSortPosition);
         }
     }
 
-    private void searchYelpReviews(String id){
+    private void searchYelpReviews(String id) {
         String tag_json_obj = "json_obj_req";
 
         String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";
@@ -357,7 +339,8 @@ public class ReviewsTab extends Fragment {
                         try {
                             JSONArray yelpReviews = response.getJSONArray("reviews");
                             _reviewListYelp = _dataParser.parseJSONReviewsYelp(yelpReviews);
-                            _reviewListYelpDefaultSort = cloneObject(_reviewListYelp);
+                            Reviews[] reviewsArray = new Reviews[_reviewListYelp.size()];
+                            _reviewListYelpDefaultSort = _reviewListYelp.toArray(reviewsArray);
                             _adapterReviewsYelp = new AdapterReviews(getActivity());
                             sortReviews(_reviewSortPosition);
                             hidepDialog();
@@ -393,7 +376,7 @@ public class ReviewsTab extends Fragment {
             url += "/yelpmatch?";
             String name = _details.getString("name");
 
-            if(name.length() > 64){
+            if (name.length() > 64) {
                 name = name.substring(0, 63);
             }
 
@@ -451,14 +434,5 @@ public class ReviewsTab extends Fragment {
             _pDialog.dismiss();
     }
 
-    private ArrayList<String> cloneObject(ArrayList<Reviews> placesList){
-        ArrayList<String> defaultSortPlacesList = new ArrayList<>();
-
-        for(Reviews review : placesList){
-            defaultSortPlacesList.add(review.getRevUrl());
-        }
-
-        return defaultSortPlacesList;
-    }
     //endregion
 }
