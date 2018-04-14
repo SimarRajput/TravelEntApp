@@ -337,7 +337,6 @@ public class SearchResults extends AppCompatActivity {
                                         _emptyView.setVisibility(View.VISIBLE);
                                     }
                                 } catch (JSONException e) {
-
                                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                                     _recResults.setVisibility(View.GONE);
                                     _emptyView.setVisibility(View.VISIBLE);

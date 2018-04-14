@@ -57,8 +57,8 @@ public class ReviewsTab extends Fragment {
     private int _reviewSortPosition = 0;
     private ArrayList<Reviews> _reviewList = new ArrayList<>();
     private ArrayList<Reviews> _reviewListYelp = new ArrayList<>();
-    private ArrayList<Reviews> _reviewListDefaultSort = new ArrayList<>();
-    private ArrayList<Reviews> _reviewListYelpDefaultSort = new ArrayList<>();
+    private ArrayList<String> _reviewListDefaultSort = new ArrayList<>();
+    private ArrayList<String> _reviewListYelpDefaultSort = new ArrayList<>();
     //endregion
 
     //region Override Methods
@@ -109,7 +109,7 @@ public class ReviewsTab extends Fragment {
                 JSONArray reviews = _details.getJSONArray("reviews");
 
                 _reviewList = _dataParser.parseJSONReviews(reviews);
-                _reviewListDefaultSort = _dataParser.parseJSONReviews(reviews);;
+                _reviewListDefaultSort = cloneObject(_reviewList);
 
                 _adapterReviews.setReviewsList(_reviewList);
             }
@@ -130,6 +130,7 @@ public class ReviewsTab extends Fragment {
                 this.getActivity(), R.array.review_type_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _spinnerReviewType.setAdapter(adapter);
+        _spinnerReviewType.setSelection(0,false);
         _spinnerReviewType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -148,6 +149,7 @@ public class ReviewsTab extends Fragment {
                 this.getActivity(), R.array.review_sort_array, android.R.layout.simple_spinner_item);
         adapterSort.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         _spinnerReviewSort.setAdapter(adapterSort);
+        _spinnerReviewSort.setSelection(0,false);
         _spinnerReviewSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -182,7 +184,16 @@ public class ReviewsTab extends Fragment {
     private void sortReviews(int position) {
         if(_reviewPosition == 0) {
             if (position == 0) {
-                _reviewList = _reviewListDefaultSort;
+                ArrayList<Reviews> defaultOrderReviews = new ArrayList<>();
+                for(int i = 0; i < _reviewListDefaultSort.size(); i++){
+                    for(int j = 0; j < _reviewList.size(); j++){
+                        if(_reviewListDefaultSort.get(i) == _reviewList.get(j).getRevUrl()){
+                            defaultOrderReviews.add(_reviewList.get(j));
+                            break;
+                        }
+                    }
+                }
+                _reviewList = defaultOrderReviews;
                 _reviewSortPosition = 0;
             } else if (position == 1) {
                 Collections.sort(_reviewList, new Comparator<Reviews>() {
@@ -221,7 +232,16 @@ public class ReviewsTab extends Fragment {
             _adapterReviews.setReviewsList(_reviewList);
         } else{
             if (position == 0) {
-                _reviewListYelp = _reviewListYelpDefaultSort;
+                ArrayList<Reviews> defaultOrderReviews = new ArrayList<>();
+                for(int i = 0; i < _reviewListYelpDefaultSort.size(); i++){
+                    for(int j = 0; j < _reviewListYelp.size(); j++){
+                        if(_reviewListYelpDefaultSort.get(i) == _reviewListYelp.get(j).getRevUrl()){
+                            defaultOrderReviews.add(_reviewListYelp.get(j));
+                            break;
+                        }
+                    }
+                }
+                _reviewListYelp = defaultOrderReviews;
                 _reviewSortPosition = 0;
             } else if (position == 1) {
                 Collections.sort(_reviewListYelp, new Comparator<Reviews>() {
@@ -337,7 +357,7 @@ public class ReviewsTab extends Fragment {
                         try {
                             JSONArray yelpReviews = response.getJSONArray("reviews");
                             _reviewListYelp = _dataParser.parseJSONReviewsYelp(yelpReviews);
-                            _reviewListYelpDefaultSort = _dataParser.parseJSONReviewsYelp(yelpReviews);
+                            _reviewListYelpDefaultSort = cloneObject(_reviewListYelp);
                             _adapterReviewsYelp = new AdapterReviews(getActivity());
                             sortReviews(_reviewSortPosition);
                             hidepDialog();
@@ -371,7 +391,14 @@ public class ReviewsTab extends Fragment {
         String url = "http://googleapicalls.us-east-2.elasticbeanstalk.com";
         try {
             url += "/yelpmatch?";
-            url += "name=" + _details.getString("name").substring(0, 63) + "&";
+            String name = _details.getString("name");
+
+            if(name.length() > 64){
+                name = name.substring(0, 63);
+            }
+
+            url += "name=" + name + "&";
+
 
             double latitude = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
             double longitude = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
@@ -422,6 +449,16 @@ public class ReviewsTab extends Fragment {
     private void hidepDialog() {
         if (_pDialog.isShowing())
             _pDialog.dismiss();
+    }
+
+    private ArrayList<String> cloneObject(ArrayList<Reviews> placesList){
+        ArrayList<String> defaultSortPlacesList = new ArrayList<>();
+
+        for(Reviews review : placesList){
+            defaultSortPlacesList.add(review.getRevUrl());
+        }
+
+        return defaultSortPlacesList;
     }
     //endregion
 }

@@ -28,6 +28,15 @@ public class Reviews {
         this.revUrl = revUrl;
     }
 
+    public Reviews(Reviews copyReviews){
+        this.revProfilePic = new String(copyReviews.revProfilePic);
+        this.revName = new String(copyReviews.revName);
+        this.revDate = new Date(String.valueOf(copyReviews.revDate));
+        this.revReview = new String(copyReviews.revReview);
+        this.revRating = new Float(copyReviews.revRating);
+        this.revUrl = new String(copyReviews.revUrl);
+    }
+
     public String getRevProfilePic() {
         return this.revProfilePic;
     }
