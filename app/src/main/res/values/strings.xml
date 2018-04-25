@@ -28,35 +28,67 @@
     </string-array>
 
     <string-array name="category_array">
-        <item>Default</item>
-        <item>Airport</item>
-        <item>Amusement Park</item>
-        <item>Aquarium</item>
-        <item>Art Gallery</item>
-        <item>Bakery</item>
-        <item>Bar</item>
-        <item>Beauty Salon</item>
-        <item>Bowling Alley</item>
-        <item>Bus Station</item>
-        <item>Cafe</item>
-        <item>Camp Ground</item>
-        <item>Car Rental</item>
-        <item>Casino</item>
-        <item>Lodging</item>
-        <item>Movie Theatre</item>
-        <item>Museum</item>
-        <item>Night Club</item>
-        <item>Park</item>
-        <item>Parking</item>
-        <item>Restaurant</item>
-        <item>Shopping Mall</item>
-        <item>Stadium</item>
-        <item>Subway Station</item>
-        <item>Taxi Stand</item>
-        <item>Train Station</item>
-        <item>Transit Station</item>
-        <item>Travel Agency</item>
-        <item>Zoo</item>
+        <item value ="default">Default</item>
+        <item value ="airport">Airport</item>
+        <item value ="amusement_park">Amusement Park</item>
+        <item value ="aquarium">Aquarium</item>
+        <item value ="art_gallery">Art Gallery</item>
+        <item value ="bakery">Bakery</item>
+        <item value ="bar">Bar</item>
+        <item value ="beauty_salon">Beauty Salon</item>
+        <item value ="bowling_alley">Bowling Alley</item>
+        <item value ="bus_station">Bus Station</item>
+        <item value ="cafe">Cafe</item>
+        <item value ="camp_ground">Camp Ground</item>
+        <item value ="car_rental">Car Rental</item>
+        <item value ="casino">Casino</item>
+        <item value ="lodging">Lodging</item>
+        <item value ="movie_theatre">Movie Theatre</item>
+        <item value ="museum">Museum</item>
+        <item value ="night_club">Night Club</item>
+        <item value ="park">Park</item>
+        <item value ="parking">Parking</item>
+        <item value ="restaurant">Restaurant</item>
+        <item value ="shopping_mall">Shopping Mall</item>
+        <item value ="stadium">Stadium</item>
+        <item value ="subway_station">Subway Station</item>
+        <item value ="taxi_stand">Taxi Stand</item>
+        <item value ="train_station">Train Station</item>
+        <item value ="transit_station">Transit Station</item>
+        <item value ="travel_agency">Travel Agency</item>
+        <item value ="zoo">Zoo</item>
+    </string-array>
+
+    <string-array name="category_array_values">
+        <item>default</item>
+        <item>airport</item>
+        <item>amusement_park</item>
+        <item>aquarium</item>
+        <item>art_gallery</item>
+        <item>bakery</item>
+        <item>bar</item>
+        <item>beauty_salon</item>
+        <item>bowling_alley</item>
+        <item>bus_station</item>
+        <item>cafe</item>
+        <item>camp_ground</item>
+        <item>car_rental</item>
+        <item>casino</item>
+        <item>lodging</item>
+        <item>movie_theatre</item>
+        <item>museum</item>
+        <item>night_clubb</item>
+        <item>park</item>
+        <item>parking</item>
+        <item>restaurant</item>
+        <item>shopping_mall</item>
+        <item>stadium</item>
+        <item>subway_station</item>
+        <item>taxi_stand</item>
+        <item>train_station</item>
+        <item>transit_station</item>
+        <item>travel_agency</item>
+        <item>zoo</item>
     </string-array>
     <string name="title_activity_details">Details</string>
 

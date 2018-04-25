@@ -1,5 +1,6 @@
 package simar.travelentapp.Tabs;
 
+import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -171,6 +172,7 @@ public class InfoTab extends Fragment {
         }
     }
 
+    @SuppressLint("ResourceType")
     private TextView[] getTextView(int margin) {
         TextView[] txtViewList = new TextView[2];
 

@@ -250,7 +250,7 @@ public class SearchTab extends Fragment {
         url += "/places?";
         url += "location=" + _lat + "," + _lon + "&";
         url += "radius=" + distance + "&";
-        url += "type=" + _spinner.getSelectedItem().toString() + "&";
+        url += "type=" + getResources().getStringArray(R.array.category_array_values)[_spinner.getSelectedItemPosition()] + "&";
         url += "keyword=" + _txtKeyword.getText().toString().trim();
 
         return url;
