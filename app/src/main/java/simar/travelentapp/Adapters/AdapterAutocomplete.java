@@ -2,7 +2,11 @@ package simar.travelentapp.Adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.text.SpannableString;
 import android.text.style.CharacterStyle;
+import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +29,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import simar.travelentapp.R;
 
 public class AdapterAutocomplete extends ArrayAdapter<AutocompletePrediction> implements Filterable {
 
@@ -65,11 +73,20 @@ public class AdapterAutocomplete extends ArrayAdapter<AutocompletePrediction> im
 
         AutocompletePrediction item = getItem(position);
 
-        TextView textView1 = (TextView) row.findViewById(android.R.id.text1);
-        TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
-        textView1.setText(item.getPrimaryText(STYLE_BOLD));
-        textView2.setText(item.getSecondaryText(STYLE_BOLD));
+        if (position == (mResultList.size() - 1)) {
+            TextView textView1 = (TextView) row.findViewById(android.R.id.text1);
+            textView1.setCompoundDrawablesWithIntrinsicBounds(R.drawable.powered_by_google_light, 0, 0, 0);
+            textView1.setText("");
+            TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
+            textView2.setText("");
 
+        } else{
+            TextView textView1 = (TextView) row.findViewById(android.R.id.text1);
+            textView1.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+            TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
+            textView1.setText(item.getPrimaryText(STYLE_BOLD));
+            textView2.setText(item.getSecondaryText(STYLE_BOLD));
+        }
         return row;
     }
 
@@ -86,7 +103,48 @@ public class AdapterAutocomplete extends ArrayAdapter<AutocompletePrediction> im
                     filterData = getAutocomplete(constraint);
                 }
 
+                AutocompletePrediction poweredByGoogle = new AutocompletePrediction() {
+                    @Override
+                    public CharSequence getFullText(@Nullable CharacterStyle characterStyle) {
+                        return null;
+                    }
+
+                    @Override
+                    public CharSequence getPrimaryText(@Nullable CharacterStyle characterStyle) {
+                        return null;
+                    }
+
+                    @Override
+                    public CharSequence getSecondaryText(@Nullable CharacterStyle characterStyle) {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public String getPlaceId() {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public List<Integer> getPlaceTypes() {
+                        return null;
+                    }
+
+                    @Override
+                    public AutocompletePrediction freeze() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isDataValid() {
+                        return false;
+                    }
+                };
+
+                filterData.add(poweredByGoogle);
                 results.values = filterData;
+
                 if (filterData != null) {
                     results.count = filterData.size();
                 } else {
