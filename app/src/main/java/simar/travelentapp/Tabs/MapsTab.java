@@ -59,6 +59,8 @@ public class MapsTab extends Fragment {
 
     private double _latOrigin = 0;
     private double _lonOrigin = 0;
+    private String _title = "";
+    private String _titleDestination = "";
     private static final int _autoCompleteReqCode = 1;
 
     protected GeoDataClient _geoDataClient;
@@ -77,6 +79,7 @@ public class MapsTab extends Fragment {
         String[] placeLatLangString = bundleDetails.getString("LatLng").split(",");
         double latitude = Double.parseDouble(placeLatLangString[0]);
         double longitude = Double.parseDouble(placeLatLangString[1]);
+        _title = placeLatLangString[2];
         _placeLatLang = new LatLng(latitude, longitude);
 
         //Initialize maps
@@ -92,7 +95,7 @@ public class MapsTab extends Fragment {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 _googleMap = mMap;
-                _googleMap.addMarker(new MarkerOptions().position(_placeLatLang));
+                _googleMap.addMarker(new MarkerOptions().position(_placeLatLang).title(_title)).showInfoWindow();
 
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(_placeLatLang).zoom(14).build();
                 _googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -176,6 +179,7 @@ public class MapsTab extends Fragment {
                 // Get the Place object from the buffer.
                 final Place place = places.get(0);
 
+                _titleDestination = place.getName().toString();
                 LatLng latLng = place.getLatLng();
 
                 _latOrigin = latLng.latitude;
@@ -230,7 +234,7 @@ public class MapsTab extends Fragment {
 
     private void displayDirection(String[] directionsList) {
         _googleMap.clear();
-        _googleMap.addMarker(new MarkerOptions().position(new LatLng(_placeLatLang.latitude, _placeLatLang.longitude)));
+        _googleMap.addMarker(new MarkerOptions().position(new LatLng(_placeLatLang.latitude, _placeLatLang.longitude)).title(_title)).showInfoWindow();
 
         PolylineOptions options = new PolylineOptions();
         options.color(Color.BLUE);
@@ -241,7 +245,7 @@ public class MapsTab extends Fragment {
         }
         _googleMap.addPolyline(options);
 
-        _googleMap.addMarker(new MarkerOptions().position(new LatLng(_latOrigin, _lonOrigin)));
+        _googleMap.addMarker(new MarkerOptions().position(new LatLng(_latOrigin, _lonOrigin)).title(_titleDestination)).showInfoWindow();
         CameraPosition cameraPosition = new CameraPosition.Builder().target(_placeLatLang).zoom(12).build();
         _googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }

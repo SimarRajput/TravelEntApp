@@ -151,14 +151,16 @@ public class Details extends AppCompatActivity {
         Bundle args = new Bundle();
         double lat = 0;
         double lng = 0;
+        String title = "";
 
         try {
             lat = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
             lng = _details.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+            title = _details.getString("name");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        args.putString("LatLng", lat + "," + lng);
+        args.putString("LatLng", lat + "," + lng + "," + title);
 
         return args;
     }
