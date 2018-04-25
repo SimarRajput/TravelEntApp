@@ -73,6 +73,7 @@ public class ReviewsTab extends Fragment {
         //Initialize Recycler View
         _recReviews = (RecyclerView) _rootView.findViewById(R.id.recReviews);
         _recReviews.setLayoutManager(new LinearLayoutManager(getActivity()));
+        _adapterReviewsYelp = new AdapterReviews(getActivity());
         _adapterReviews = new AdapterReviews(getActivity());
         _recReviews.setAdapter(_adapterReviews);
         _recReviews.addOnItemTouchListener(new RecyclerTouchListener(getContext(), _recReviews, new RecyclerTouchListener.ClickListener() {
@@ -280,15 +281,22 @@ public class ReviewsTab extends Fragment {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                JSONArray businessArray = response.getJSONArray("businesses");
-                                JSONObject business = null;
-                                if (businessArray.length() > 0) {
-                                    business = businessArray.getJSONObject(0);
-                                    searchYelpReviews(business.getString("id"));
-                                    _recReviews.setVisibility(View.VISIBLE);
-                                    _emptyView.setVisibility(View.GONE);
+                                if(response.has("businesses")) {
+                                    JSONArray businessArray = response.getJSONArray("businesses");
+                                    JSONObject business = null;
+                                    if (businessArray.length() > 0) {
+                                        business = businessArray.getJSONObject(0);
+                                        searchYelpReviews(business.getString("id"));
+                                        _recReviews.setVisibility(View.VISIBLE);
+                                        _emptyView.setVisibility(View.GONE);
 
-                                } else {
+                                    } else {
+                                        _recReviews.setVisibility(View.GONE);
+                                        _emptyView.setVisibility(View.VISIBLE);
+                                        hidepDialog();
+                                    }
+                                }
+                                else{
                                     _recReviews.setVisibility(View.GONE);
                                     _emptyView.setVisibility(View.VISIBLE);
                                     hidepDialog();
@@ -341,7 +349,6 @@ public class ReviewsTab extends Fragment {
                             _reviewListYelp = _dataParser.parseJSONReviewsYelp(yelpReviews);
                             Reviews[] reviewsArray = new Reviews[_reviewListYelp.size()];
                             _reviewListYelpDefaultSort = _reviewListYelp.toArray(reviewsArray);
-                            _adapterReviewsYelp = new AdapterReviews(getActivity());
                             sortReviews(_reviewSortPosition);
                             hidepDialog();
 

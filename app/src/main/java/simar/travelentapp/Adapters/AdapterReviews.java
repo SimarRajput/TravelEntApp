@@ -31,8 +31,10 @@ public class AdapterReviews extends RecyclerView.Adapter<AdapterReviews.ViewHold
     }
 
     public void setReviewsList(ArrayList<Reviews> reviewsList){
-        this._reviewsList = reviewsList;
-        notifyItemRangeChanged(0, reviewsList.size());
+        if(reviewsList.size() > 0) {
+            this._reviewsList = reviewsList;
+            notifyItemRangeChanged(0, reviewsList.size());
+        }
     }
 
     @Override
