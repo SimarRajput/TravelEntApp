@@ -297,7 +297,7 @@ public class SearchResults extends AppCompatActivity {
             _adapterSearchResults.setPlacesList(_placesList);
             _btnNext.setEnabled(true);
             _currentTableNumber += 1;
-            if(_currentTableNumber == 3){
+            if(_currentTableNumber == 3 || _placesList.size() < 20){
                 _btnNext.setEnabled(false);
             }
             _btnPrevious.setEnabled(true);
