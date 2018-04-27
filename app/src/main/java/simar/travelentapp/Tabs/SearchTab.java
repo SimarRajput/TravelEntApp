@@ -116,9 +116,7 @@ public class SearchTab extends Fragment {
         _btnClear.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        if (validateInput()) {
                             clearForm();
-                        }
                     }
                 }
         );
@@ -285,15 +283,18 @@ public class SearchTab extends Fragment {
         } else {
             _txtLocation.setText("");
             _txtLocation.setEnabled(false);
+            clearErrors(_txtLocationLayout.getId());
         }
     }
 
     private void clearForm() {
         _txtKeyword.setText("");
-        _txtKeyword.requestFocus();
         _spinner.setSelection(0);
         _txtDistance.setText("");
         _rdCurrentLoc.setChecked(true);
+
+        clearErrors(_txtKeywordLayout.getId());
+        clearErrors(_txtLocationLayout.getId());
     }
 
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
